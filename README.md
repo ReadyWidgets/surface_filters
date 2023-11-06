@@ -20,6 +20,7 @@ git clone 'https://github.com/ReadyWidgets/surface_filters.git' "${XDG_CONFIG_HO
 cd "${XDG_CONFIG_HOME:-$HOME/.config}/awesome/surface_filters"
 meson setup --reconfigure builddir
 meson compile -C builddir
+yue -c -l .
 ```
 
 ## Usage
