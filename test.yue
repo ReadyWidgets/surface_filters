@@ -1,0 +1,27 @@
+import "surface_filters.surface_filters"
+
+from "lgi" import cairo
+
+apply_blur = (radius) =>
+	cairo.Surface(surface_filters.cairo_image_surface_apply_blur(@_native, radius))
+
+apply_shadow = (radius) =>
+	cairo.Surface(surface_filters.cairo_image_surface_apply_shadow(@_native, radius))
+
+const input_file  = arg[1] or "#{arg[0]::gsub('/.*$', '') or '.'}/test2.png"
+const output_file = "#{input_file::gsub('%.[^%.]+$', '')}_blurred.png"
+
+do
+	const file = assert(io.open(output_file, "w"))
+	file::write("")
+	file::close()
+
+do
+	print("INFO: Applying blur filter to '#{input_file}'!")
+
+	const surface = cairo.ImageSurface.create_from_png(input_file)
+
+	const surface_processed = apply_blur(surface, 10)
+
+	print("INFO: Writing blurred file to '#{output_file}'!")
+	print(surface_processed::write_to_png(output_file))

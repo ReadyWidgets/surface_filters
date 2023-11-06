@@ -1,0 +1,5 @@
+*.lua
+/.vscode/
+/.cache/
+/build/
+/builddir/
