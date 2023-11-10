@@ -4,12 +4,6 @@ This is a rewrite of [@ReadyWidgets/filters](https://github.com/ReadyWidgets/fil
 
 ## Install
 
-First, you need the yuescript compiler CLI. Install it from Luarocks:
-
-```sh
-MAKEFLAGS='-j8' luarocks --local install yuescript
-```
-
 To download, compile and install this module, run this in your terminal:
 
 > [!IMPORTANT]
@@ -20,7 +14,6 @@ git clone 'https://github.com/ReadyWidgets/surface_filters.git' "${XDG_CONFIG_HO
 cd "${XDG_CONFIG_HOME:-$HOME/.config}/awesome/surface_filters"
 meson setup --reconfigure builddir
 meson compile -C builddir
-yue -c -l .
 ```
 
 ## Usage
