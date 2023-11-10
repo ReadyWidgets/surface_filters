@@ -24,22 +24,22 @@ To try out this module, you can put something like this in your `rc.lua`:
 local surface_filters = require("surface_filters")
 
 local box = wibox {
-	height  = scale(300),
-	width   = scale(300),
-	visible = true,
-	ontop   = true,
-	bg      = "#202020",
-	widget  = {
-		{
-			image  = "#{gears.filesystem.get_configuration_dir()}/surface_filters/test1.png",
-			halign = "center",
-			valign = "center",
-			widget = wibox.widget.imagebox,
-		},
-		dual_pass = true,
-		radius    = 5,
-		widget    = surface_filters.blur,
-	}
+    height  = scale(300),
+    width   = scale(300),
+    visible = true,
+    ontop   = true,
+    bg      = "#202020",
+    widget  = {
+        {
+            image  = "#{gears.filesystem.get_configuration_dir()}/surface_filters/test1.png",
+            halign = "center",
+            valign = "center",
+            widget = wibox.widget.imagebox,
+        },
+        dual_pass = true,
+        radius    = 5,
+        widget    = surface_filters.blur,
+    }
 }
 
 awful.placement.bottom_left(box, { honor_workarea = true, margins = scale(5) })
