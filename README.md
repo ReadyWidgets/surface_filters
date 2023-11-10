@@ -24,8 +24,8 @@ To try out this module, you can put something like this in your `rc.lua`:
 local surface_filters = require("surface_filters")
 
 local box = wibox {
-    height  = scale(300),
-    width   = scale(300),
+    height  = dpi(300),
+    width   = dpi(300),
     visible = true,
     ontop   = true,
     bg      = "#202020",
@@ -42,5 +42,5 @@ local box = wibox {
     }
 }
 
-awful.placement.bottom_left(box, { honor_workarea = true, margins = scale(5) })
+awful.placement.bottom_left(box, { honor_workarea = true, margins = dpi(5) })
 ```
