@@ -61,6 +61,8 @@ void cairo_image_surface_create_blurred(cairo_surface_t *restrict input_surface,
 
 	gulong end = width * height;
 
+	gdouble *kernel = generate_blur_kernel_linear(radius*2, radius);
+
 	// Horizontal pass
 	for (gulong i = 0; i < end; i++) {
 		gulong sum_alpha = 0;
@@ -70,16 +72,17 @@ void cairo_image_surface_create_blurred(cairo_surface_t *restrict input_surface,
 
 		for (gint offset = -radius; offset < (gint)radius; offset++) {
 			guint true_index = int_clamp(i + offset, 0, end);
-			sum_alpha += input_pixels[true_index].alpha; //* kernel[radius + offset];
-			sum_red   += input_pixels[true_index].red;   //* kernel[radius + offset];
-			sum_green += input_pixels[true_index].green; //* kernel[radius + offset];
-			sum_blue  += input_pixels[true_index].blue;  //* kernel[radius + offset];
+			gdouble kernel_point = kernel[radius + offset];
+			sum_alpha += input_pixels[true_index].alpha * kernel_point;
+			sum_red   += input_pixels[true_index].red   * kernel_point;
+			sum_green += input_pixels[true_index].green * kernel_point;
+			sum_blue  += input_pixels[true_index].blue  * kernel_point;
 		}
 
-		output_pixels[i].alpha = sum_alpha / (radius * 2);
-		output_pixels[i].red   = sum_red   / (radius * 2);
-		output_pixels[i].green = sum_green / (radius * 2);
-		output_pixels[i].blue  = sum_blue  / (radius * 2);
+		output_pixels[i].alpha = sum_alpha;
+		output_pixels[i].red   = sum_red;
+		output_pixels[i].green = sum_green;
+		output_pixels[i].blue  = sum_blue;
 	}
 
 	// Vertical pass
@@ -92,21 +95,22 @@ void cairo_image_surface_create_blurred(cairo_surface_t *restrict input_surface,
 
 		for (gint offset = -radius; offset < (gint)radius; offset++) {
 			guint true_index = int_clamp(i + (offset * width), current_column, end - current_column);
-			sum_alpha += output_pixels[true_index].alpha;
-			sum_red   += output_pixels[true_index].red;
-			sum_green += output_pixels[true_index].green;
-			sum_blue  += output_pixels[true_index].blue;
+			gdouble kernel_point = kernel[radius + offset];
+			sum_alpha += output_pixels[true_index].alpha * kernel_point;
+			sum_red   += output_pixels[true_index].red   * kernel_point;
+			sum_green += output_pixels[true_index].green * kernel_point;
+			sum_blue  += output_pixels[true_index].blue  * kernel_point;
 		}
 
-		output_pixels[i].alpha = sum_alpha / (radius * 2);
-		output_pixels[i].red   = sum_red   / (radius * 2);
-		output_pixels[i].green = sum_green / (radius * 2);
-		output_pixels[i].blue  = sum_blue  / (radius * 2);
+		output_pixels[i].alpha = sum_alpha;
+		output_pixels[i].red   = sum_red;
+		output_pixels[i].green = sum_green;
+		output_pixels[i].blue  = sum_blue;
 	}
 
-	cairo_surface_mark_dirty(output_surface);
+	g_free(kernel);
 
-	//g_free(kernel);
+	cairo_surface_mark_dirty(output_surface);
 }
 
 DEF(export_cairo_image_surface_create_blurred) {
@@ -140,15 +144,17 @@ void cairo_image_surface_create_shadow(cairo_surface_t *restrict input_surface, 
 
 	gulong end = rowstride * height;
 
+	gdouble *kernel = generate_blur_kernel_linear(radius*2, radius);
+
 	for (gulong i = 3; i < end; i += 4) {
 		gulong sum_horizontal = 0;
 
 		for (gint offset = -radius; offset < (gint)radius; offset++) {
 			guint true_index = int_clamp(i + (offset * 4), 0, end);
-			sum_horizontal += input_pixels[true_index];
+			sum_horizontal += input_pixels[true_index] * kernel[radius + offset];
 		}
 
-		output_pixels[i] = sum_horizontal / (radius * 2);
+		output_pixels[i] = sum_horizontal;
 	}
 
 	for (gulong i = 3; i < end; i += 4) {
@@ -157,11 +163,13 @@ void cairo_image_surface_create_shadow(cairo_surface_t *restrict input_surface, 
 
 		for (gint offset = -radius; offset < (gint)radius; offset++) {
 			guint true_index = int_clamp(i + (offset * rowstride), current_column, (end - current_column));
-			sum_vertical += output_pixels[true_index];
+			sum_vertical += output_pixels[true_index] * kernel[radius + offset];
 		}
 
-		output_pixels[i] = sum_vertical / (radius * 2);
+		output_pixels[i] = sum_vertical;
 	}
+
+	g_free(kernel);
 
 	for (gulong i = 3; i < end; i += 4) {
 		output_pixels[i - 3] = 0;
